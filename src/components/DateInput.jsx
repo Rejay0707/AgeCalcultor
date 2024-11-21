@@ -1,13 +1,26 @@
 import React, { useState } from "react";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, Typography } from "@mui/material";
 
 const DateInput = ({ onCalculateAge }) => {
   const [dob, setDob] = useState("");
+  const [error, setError] = useState("");
+  
+  // Fixed current date
+  const currentDate = new Date().toISOString().split("T")[0];
 
   const handleCalculateClick = () => {
-    if (dob) {
-      onCalculateAge(dob);
+    if (!dob) {
+      setError("Please select a valid date of birth.");
+      return;
     }
+
+    if (dob >= currentDate) {
+      setError("Date of birth must be in the past.");
+      return;
+    }
+
+    setError(""); 
+    onCalculateAge(dob);
   };
 
   return (
@@ -20,6 +33,11 @@ const DateInput = ({ onCalculateAge }) => {
         InputLabelProps={{
           shrink: true,
         }}
+        inputProps={{
+          max: currentDate, 
+        }}
+        error={Boolean(error)}
+        helperText={error}
       />
       <Button
         variant="contained"
@@ -34,6 +52,11 @@ const DateInput = ({ onCalculateAge }) => {
       >
         Calculate Age
       </Button>
+      {error && (
+        <Typography color="error" variant="body2">
+          {error}
+        </Typography>
+      )}
     </Box>
   );
 };
